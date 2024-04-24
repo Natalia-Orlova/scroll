@@ -202,6 +202,24 @@
             }
         }
     </script>
+
+    <script>
+        let initialX = 0;
+        let initialY = 0;
+        let x = 0;
+        let y = 0;
+
+        img.addEventListener('touchstart', (e) => {
+            initialX = e.touches[0].clientX - x;
+            initialY = e.touches[0].clientY - y;
+        });
+
+        img.addEventListener('touchmove', (e) => {
+            x = e.touches[0].clientX - initialX;
+            y = e.touches[0].clientY - initialY;
+            img.style.margin = `${y}px 0 0 ${x}px`;
+        })
+    </script>
 </body>
 
 </html>
