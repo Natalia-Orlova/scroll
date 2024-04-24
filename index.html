@@ -210,7 +210,7 @@
         let y = 0;
         let scaleFactor = 1.0;
         let initialScaleFactor = 1.0;
-        
+
         img.addEventListener('touchstart', (e) => {
             initialX = e.touches[0].clientX - x;
             initialY = e.touches[0].clientY - y;
@@ -230,7 +230,7 @@
             let distance = Math.sqrt(dx * dx + dy * dy);
             let newScaleFactor = initialScaleFactor + (distance / 100.0);
             newScaleFactor = Math.max(1.0, Math.min(newScaleFactor, 5.0));
-            image.style.transform = `scale(${newScaleFactor})`;
+            img.style.transform = `scale(${newScaleFactor})`;
             scaleFactor = newScaleFactor;
         })
     </script>
