@@ -223,7 +223,7 @@
         });
 
         img.addEventListener('touchmove', (e) => {
-            e.preventDefault();
+            // e.preventDefault();
             x = e.touches[0].clientX - initialX;
             y = e.touches[0].clientY - initialY;
             img.style.margin = `${y}px 0 0 ${x}px`;
