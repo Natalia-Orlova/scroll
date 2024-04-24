@@ -208,13 +208,18 @@
         let initialY = 0;
         let x = 0;
         let y = 0;
-        let scaleFactor = 1.0;
-        let initialScaleFactor = 1.0;
+
+        let scale = 0.5;
+        let startX, startY, startScale;
 
         img.addEventListener('touchstart', (e) => {
             initialX = e.touches[0].clientX - x;
             initialY = e.touches[0].clientY - y;
             initialScaleFactor = scaleFactor;
+
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            startScale = scale;
         });
 
         img.addEventListener('touchmove', (e) => {
@@ -223,16 +228,17 @@
             y = e.touches[0].clientY - initialY;
             img.style.margin = `${y}px 0 0 ${x}px`;
 
-            let touch1 = e.touches[0];
-            let touch2 = e.touches[1];
-            let dx = touch2.pageX - touch1.pageX;
-            let dy = touch2.pageY - touch1.pageY;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-            let newScaleFactor = initialScaleFactor + (distance / 100.0);
-            newScaleFactor = Math.max(1.0, Math.min(newScaleFactor, 5.0));
-            img.style.transform = `scale(${newScaleFactor})`;
-            scaleFactor = newScaleFactor;
-        })
+            let currX = e.touches[0].clientX;
+            let currY = e.touches[0].clientY;
+            let distX = currX - startX;
+            let distY = currY - startY;
+            let newScale = startScale * Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)) / 100;
+            img.style.transform = `scale(${newScale})`;
+        });
+
+        img.addEventListener('touchend', () => {
+            scale = newScale;
+        });
     </script>
 </body>
 
