@@ -235,7 +235,7 @@
         var render = () => {
             img.requestAnimationFrame(() => {
                 var val = `translate3D(${posX}px, ${posY}px, 0px) rotate(${rotation}deg) scale(${scale})`;
-                node.style.transform = val;
+                img.style.transform = val;
             });
         };
         img.addEventListener("gesturestart", function (e) {
