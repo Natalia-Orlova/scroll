@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+    <link rel="stylesheet" href="canvas.css">
+</head>
+
+<body>
+    <canvas id="canvas" width="700px" height="400px"> <img id="image" src="img4.jpg" alt=""></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const image = document.getElementById('image');
+        const ctx = canvas.getContext("2d");
+        image.style.cursor = 'pointer';
+        // const image = new Image();
+        // image.src = 'img4.jpg';
+        // image.style.cursor = 'grab';
+
+        requestAnimationFrame(drawCanvas);
+
+        let matrix = [1, 0, 0, 1, 0, 0];
+        let scale = 0.1;
+        const pos = { x: 0, y: 0 };
+        let dirty = true;
+        const mouse = { x: 0, y: 0, oldX: 0, oldY: 0, dragging: false };
+
+        canvas.addEventListener("mousemove", mouseEvent, { passive: true });
+        canvas.addEventListener("mousedown", mouseEvent, { passive: true });
+        canvas.addEventListener("mouseup", mouseEvent, { passive: true });
+        canvas.addEventListener("mouseout", mouseEvent, { passive: true });
+        canvas.addEventListener("wheel", mouseWheelEvent, { passive: false });
+
+        function apply() {
+            if (dirty)
+                update();
+            ctx.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+        }
+
+        function update() {
+            dirty = false;
+            matrix[3] = matrix[0] = scale;
+            matrix[2] = matrix[1] = 0;
+            matrix[4] = pos.x;
+            matrix[5] = pos.y;
+        }
+
+        function pan(amount) {
+            if (dirty)
+                update();
+            pos.x += amount.x;
+            pos.y += amount.y;
+            dirty = true;
+        }
+
+        function scaleAt(at, amount) {
+            if (dirty)
+                update();
+            scale *= amount;
+            pos.x = at.x - (at.x - pos.x) * amount;
+            pos.y = at.y - (at.y - pos.y) * amount;
+            dirty = true;
+        }
+
+        function drawCanvas() {
+            if (dirty) {
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                apply();
+                ctx.drawImage(image, 0, 0);
+            }
+            requestAnimationFrame(drawCanvas);
+        }
+
+        function mouseEvent(e) {
+            if (e.type === "mousedown")
+                mouse.dragging = true;
+            if (e.type === "mouseup" || e.type === "mouseout") {
+                mouse.dragging = false;
+                canvas.style.cursor = 'grab';
+            }
+            mouse.oldX = mouse.x;
+            mouse.oldY = mouse.y;
+            mouse.x = e.offsetX;
+            mouse.y = e.offsetY
+            if (mouse.dragging) {
+                pan({ x: mouse.x - mouse.oldX, y: mouse.y - mouse.oldY });
+                canvas.style.cursor = 'grabbing';
+            }
+
+        }
+
+        function mouseWheelEvent(e) {
+            let x = e.offsetX;
+            let y = e.offsetY;
+            if (e.deltaY < 0)
+                scaleAt({ x, y }, 1.1);
+            else
+                scaleAt({ x, y }, 1 / 1.1);
+            e.preventDefault();
+        }
+    </script>
+</body>
+
+</html>

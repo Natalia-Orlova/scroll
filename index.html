@@ -53,20 +53,30 @@
 
         //работает без смещения картинки
         let zoomLevel = 0.5;
+        let maxZoom = 3;
+        let minZoom = 0.2;
+
+        // img.addEventListener('mousemove', (event) => {
+        //     img.style.transformOrigin = `${event.clientX}px ${event.clientY}px`;
+        // });
+
         img.addEventListener('wheel', function (e) {
             e.preventDefault();
-            if (e.deltaY < 0 && zoomLevel <= 3) {
+            let offsetX = (e.pageX - img.offsetLeft) / img.offsetWidth * 100;
+            let offsetY = (e.pageY - img.offsetTop) / img.offsetHeight * 100;
+
+            if (e.deltaY < 0 && zoomLevel <= maxZoom) {
                 zoomLevel += 0.1;
                 zoomRange.value = parseInt(zoomRange.value, 10) + 10;
+                img.style.transformOrigin = `${offsetX}% ${offsetY}%`;
 
-            } else if (e.deltaY > 0 && zoomLevel > 0.2) { // ограничение, чтобы scale не уходил в минус
+            } else if (e.deltaY > 0 && zoomLevel > minZoom) { // ограничение, чтобы scale не уходил в минус
                 zoomLevel -= 0.1;
                 zoomRange.value = parseInt(zoomRange.value, 10) - 10;
+                img.style.transformOrigin = `${offsetX}% ${offsetY}%`;
             }
-            let offsetX = (e.clientX - img.offsetLeft) / img.offsetWidth * 100;
-            let offsetY = (e.clientY - img.offsetTop) / img.offsetHeight * 100;
 
-            img.style.transformOrigin = `${offsetX}% ${offsetY}%`;
+            // img.style.transformOrigin = `${offsetX}% ${offsetY}%`;
             img.style.transform = `scale(${zoomLevel})`;
         });
 

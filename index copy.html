@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="zoomBtns">
+        <button id="zoomIn">+</button>
+        <input type="range" min="20" max="500" value="50" id="zoomRange">
+        <button id="zoomOut">-</button>
+    </div>
+    <div id="layer">
+        <img id="img" src="img4.jpg" style="margin: 0px 0px 0px 0px; transform: scale(0.5)">
+    </div>
+
+    <script>
+        const img = document.getElementById('img');
+        const layer = document.getElementById('layer');
+        const zoomInButton = document.getElementById("zoomIn");
+        const zoomOutButton = document.getElementById("zoomOut");
+        const zoomRange = document.getElementById("zoomRange");
+        img.style.cursor = 'grab';
+
+        //перемещение
+        img.addEventListener('mousedown', (e) => {
+            let shiftX = e.clientX - img.offsetLeft;
+            let shiftY = e.clientY - img.offsetTop;
+            img.style.cursor = 'grabbing';
+
+
+            document.onmousemove = function (e) {
+                let left = e.clientX - shiftX + 'px';
+                let top = e.clientY - shiftY + 'px';
+                img.style.margin = `${top} 0 0 ${left}`;
+            };
+
+            document.onmouseup = function () {
+                document.onmousemove = null;
+                document.onmouseup = null;
+                img.style.cursor = 'grab';
+            };
+        });
+
+        //отключить собственный drag'n'drop браузера
+        img.ondragstart = function () {
+            return false;
+        };
+
+
+        //работает без смещения картинки
+
+        const zoom = {
+            min: 1,
+            max: 3,
+            value: 1,
+            step: 0.1,
+            originX: 0,
+            originY: 0
+        };
+
+        // img.addEventListener('mousemove', (e) => {
+
+        // })
+
+        let zoomLevel = 0.5;
+        let maxZoom = 5;
+        let minZoom = 0.2;
+
+        let mouseX = 0; let mouseY = 0;
+        let xPercent; let yPercent;
+
+        img.addEventListener('wheel', function (e) {
+            e.preventDefault();
+
+            // let xPercent = (mouseX * 100) / img.width;
+            // let yPercent = (mouseY * 100) / img.height;
+
+
+            if (e.deltaY < 0 && zoomLevel <= maxZoom) {
+                zoomLevel += 0.1;
+                zoomRange.value = parseInt(zoomRange.value, 10) + 10;
+                // img.style.transformOrigin = `${mouseX}px ${mouseY}px`;
+                img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+
+            } else if (e.deltaY > 0 && zoomLevel > minZoom) { // ограничение, чтобы scale не уходил в минус
+                zoomLevel -= 0.1;
+                zoomRange.value = parseInt(zoomRange.value, 10) - 10;
+                // img.style.transformOrigin = `${mouseX}px ${mouseY}px`;
+                img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+            }
+
+            img.style.transform = `scale(${zoomLevel})`;
+        });
+
+        img.addEventListener('mousemove', (event) => {
+            let rect = img.getBoundingClientRect();
+            mouseX = event.clientX - img.offsetLeft;
+            mouseY = event.clientY - img.offsetTop;
+
+            xPercent = (mouseX * 100) / img.width;
+            yPercent = (mouseY * 100) / img.height;
+
+            // img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+        });
+
+        //кнопки + -
+        zoomInButton.addEventListener("click", function () {
+            zoomRange.value = parseInt(zoomRange.value, 10) + 10;
+            zoomLevel = zoomRange.value / 100;
+            scaleContent();
+        });
+
+        zoomOutButton.addEventListener("click", function () {
+            zoomRange.value = parseInt(zoomRange.value, 10) - 10;
+            zoomLevel = zoomRange.value / 100;
+            scaleContent();
+        });
+
+        zoomRange.addEventListener("input", function () {
+            zoomLevel = zoomRange.value / 100;
+            scaleContent();
+        });
+
+        function scaleContent(e) {
+            img.style.transform = `scale(${zoomLevel})`;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+#canvas {
+    background-color: aliceblue;
+    margin: 10% 20%;
+    cursor: grab;
+    transition: all 0.3s;
+}
